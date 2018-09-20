@@ -859,7 +859,7 @@ describe("Schema", function() {
 
   });
 
-  describe(".truncate()", function() {
+  describe(".delete()", function() {
 
     it("deletes an entity", function(done) {
 
@@ -877,6 +877,26 @@ describe("Schema", function() {
 
         yield image.delete();
         expect(image.exists()).toBe(false);
+
+      }.bind(this)).then(function() {
+        done();
+      });
+
+    });
+
+  });
+
+  describe(".truncate()", function() {
+
+    it("truncate a table", function(done) {
+
+      co(function*() {
+        yield this.fixtures.populate('gallery', ['records']);
+
+        var schema = this.gallery.definition();
+        expect((yield this.gallery.all()).count()).toBe(2);
+        schema.truncate();
+        expect((yield this.gallery.all()).count()).toBe(0);
 
       }.bind(this)).then(function() {
         done();

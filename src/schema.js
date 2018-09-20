@@ -202,7 +202,7 @@ class Schema extends BaseSchema {
    *                             documents to be deleted.
    * @return Promise
    */
-  truncate(conditions) {
+  remove(conditions) {
     return co(function*() {
       var del = this.connection().dialect().statement('delete');
 
@@ -210,6 +210,21 @@ class Schema extends BaseSchema {
          .where(conditions);
 
       return this.connection().query(del.toString());
+    }.bind(this));
+  }
+
+  /**
+   * Truncate a table.
+   *
+   * @return Promise
+   */
+  truncate() {
+    return co(function*() {
+      var truncate = this.connection().dialect().statement('truncate');
+
+      truncate.table(this.source());
+
+      return this.connection().query(truncate.toString());
     }.bind(this));
   }
 
