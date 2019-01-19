@@ -77,6 +77,12 @@ class Database extends Source {
     this._transactionLevel = 0;
 
     /**
+     * The transaction current level
+     *
+     */
+    this._currentLevel = 0;
+
+    /**
      * Stores configuration information for object instances at time of construction.
      *
      * @var Object
@@ -191,11 +197,12 @@ class Database extends Source {
     return co(function*() {
       if (this._transactionLevel === 0) {
         yield this.openTransaction();
-      } else if (this._transactionLevel >0 && this.constructor.enabled('savepoints')) {
+      } else if (this._transactionLevel > 0 && this._transactionLevel === this._currentLevel && this.constructor.enabled('savepoints')) {
         var name = 'TRANS' + (this._transactionLevel + 1);
         yield this.execute("SAVEPOINT " + name);
       }
       this._transactionLevel++;
+      this._currentLevel = this._transactionLevel;
     }.bind(this));
   }
 
@@ -247,6 +254,7 @@ class Database extends Source {
       }
       if (this._transactionLevel === 0) {
         yield this.execute("COMMIT");
+        this._currentLevel = 0;
       }
     }.bind(this));
   }
@@ -269,6 +277,7 @@ class Database extends Source {
         yield this.execute("ROLLBACK TO SAVEPOINT " + name);
       }
       this._transactionLevel = toLevel;
+      this._currentLevel = this._transactionLevel;
     }.bind(this));
   }
 
