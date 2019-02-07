@@ -6,6 +6,7 @@ var Query = require('../../src/query');
 var Schema = require('../../src/schema');
 var Dialect = require('sql-dialect').Dialect;
 var Model = require('chaos-orm').Model;
+var Document = require('chaos-orm').Document;
 var Sqlite = require('../adapter/sqlite');
 
 var Fixtures = require('../fixture/fixtures');
@@ -145,7 +146,7 @@ describe("Schema", function() {
 
   describe(".defaults()", function() {
 
-    it("returns defaults", function() {
+    it("filters out non standard values", function() {
 
       var schema = new Schema({ connection: this.connection });
       schema.column('name', { type: 'string', default: 'Enter The Name Here' });
@@ -157,6 +158,36 @@ describe("Schema", function() {
         name: 'Enter The Name Here',
         title: 'Enter The Title Here'
       });
+
+    });
+
+    it("correctly sets default values with stars", function() {
+
+      var schema = new Schema();
+      schema.column('data', { type: 'object', default: {} });
+      schema.column('data.*', { type: 'object', default: {} });
+      schema.column('data.*.checked', { type: 'boolean', default: true });
+      schema.locked(true);
+
+      var document = new Document({ schema: schema });
+
+      expect(document.get('data.value1.checked')).toBe(true);
+
+    });
+
+    it("correctly sets default values with stars and prefix collision", function() {
+
+      var schema = new Schema();
+      schema.column('datasource', { type: 'boolean', 'default': false });
+      schema.column('data', { type: 'object', default: {} });
+      schema.column('data.*', { type: 'object', default: {} });
+      schema.column('data.*.checked', { type: 'boolean', default: true });
+      schema.locked(true);
+
+      var document = new Document({ schema: schema });
+
+      expect(document.get('datasource')).toBe(false);
+      expect(document.get('data.value1.checked')).toBe(true);
 
     });
 
