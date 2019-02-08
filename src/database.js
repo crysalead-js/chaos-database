@@ -329,12 +329,14 @@ class Database extends Source {
   /**
    * Formats a value according to its definition.
    *
-   * @param  String mode  The format mode (i.e. `'cast'` or `'datasource'`).
-   * @param  String type  The type name.
-   * @param  mixed  value The value to format.
-   * @return mixed        The formated value.
+   * @param  String mode   The format mode (i.e. `'cast'` or `'datasource'`).
+   * @param  String type   The type name.
+   * @param  mixed  value  The value to format.
+   * @param  mixed  column The column options to pass the the formatter handler.
+   * @param  Object options The options to pass the the formatter handler (for `'cast'` mode only).
+   * @return mixed          The formated value.
    */
-  convert(mode, type, value, options) {
+  convert(mode, type, value, column, options) {
     if (value !== null && typeof value === 'object' && value.constructor === Object) {
       var key = Object.keys(value)[0];
       var dialect = this.dialect();
@@ -342,7 +344,7 @@ class Database extends Source {
         return dialect.format(key, value[key]);
       }
     }
-    return super.convert(mode, type, value, options);
+    return super.convert(mode, type, value, column, options);
   }
 
   /**
@@ -353,35 +355,35 @@ class Database extends Source {
   _handlers() {
     return merge({}, super._handlers(), {
       datasource: {
-        'decimal': function(value, options) {
+        'decimal': function(value, column) {
           var defaults = { precision: 2 };
-          options = extend({}, defaults, options);
-          return Number(value).toFixed(options.precision);
+          column = extend({}, defaults, column);
+          return Number(value).toFixed(column.precision);
         },
-        'quote': function(value, options) {
+        'quote': function(value, column) {
           return this.dialect().quote(String(value));
         }.bind(this),
-        'date': function(value, options) {
-          options = options || {};
-          options.format = options.format ? options.format : 'yyyy-mm-dd';
-          return this.convert('datasource', 'datetime', value, options);
+        'date': function(value, column) {
+          column = column || {};
+          column.format = column.format ? column.format : 'yyyy-mm-dd';
+          return this.convert('datasource', 'datetime', value, column);
         }.bind(this),
-        'datetime': function(value, options) {
-          options = options || {};
-          options.format = options.format ? options.format : 'yyyy-mm-dd HH:MM:ss';
+        'datetime': function(value, column) {
+          column = column || {};
+          column.format = column.format ? column.format : 'yyyy-mm-dd HH:MM:ss';
           var date = dateParse(value, true);
           if (Number.isNaN(date.getTime())) {
             throw new Error("Invalid date `" + value + "`, can't be parsed.");
           }
-          return this.dialect().quote(dateFormat(date, options.format, true));
+          return this.dialect().quote(dateFormat(date, column.format, true));
         }.bind(this),
-        'boolean': function(value, options) {
+        'boolean': function(value, column) {
           return value ? 'TRUE' : 'FALSE';
         },
-        'null': function(value, options) {
+        'null': function(value, column) {
           return 'NULL';
         },
-        'json': function(value, options) {
+        'json': function(value, column) {
           if (value && value.data) {
             value = value.data();
           }

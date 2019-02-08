@@ -304,13 +304,14 @@ class Schema extends BaseSchema {
   /**
    * Formats a value according to its type.
    *
-   * @param   String mode    The format mode (i.e. `'cast'` or `'datasource'`).
-   * @param   String type    The format type.
-   * @param   mixed  value   The value to format.
-   * @param   mixed  options The options array to pass the the formatter handler.
-   * @return  mixed          The formated value.
+   * @param  String mode    The format mode (i.e. `'cast'` or `'datasource'`).
+   * @param  String type    The format type.
+   * @param  mixed  value   The value to format.
+   * @param  Object column  The column options to pass the the formatter handler.
+   * @param  Object options The options to pass the the formatter handler (for `'cast'` mode only).
+   * @return mixed          The formated value.
    */
-  convert(mode, type, value, options) {
+  convert(mode, type, value, column, options) {
     var formatter;
     type = value === null ? 'null' : type;
     if (value !== null && typeof value === 'object' && value.constructor === Object) {
@@ -325,7 +326,7 @@ class Schema extends BaseSchema {
     } else if (this._formatters[mode] && this._formatters[mode]._default_) {
       formatter = this._formatters[mode]._default_;
     }
-    return formatter ? formatter(value, options) : value;
+    return formatter ? formatter(value, column, options) : value;
   }
 }
 
