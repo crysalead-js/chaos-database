@@ -2,6 +2,7 @@ var Database = require('../../src/database');
 var Schema = require('../../src/schema');
 var Dialect = require('sql-dialect').Dialect;
 var Source = require('chaos-orm').Source;
+var Document = require('chaos-orm').Document;
 
 describe("Database", function() {
 
@@ -166,6 +167,20 @@ describe("Database", function() {
       expect(this.database.convert('cast', 'string', 'abc')).toBe('abc');
       expect(this.database.convert('cast', '_default_', 123)).toBe(123);
       expect(this.database.convert('cast', '_undefined_', 123)).toBe(123);
+      expect(this.database.convert('cast', 'json', '[1,2]')).toEqual([1,2]);
+      expect(this.database.convert('cast', 'object', {a: 'b'}).data()).toEqual({a: 'b'});
+
+      var schema = new Schema({ locked: false });
+      var value = this.database.convert('cast', 'object', {a: 'b'}, {}, { basePath: 'test', schema: schema });
+      expect(value.basePath()).toEqual('test');
+      expect(value.schema()).toEqual(schema);
+      expect(value.data()).toEqual({a: 'b'});
+
+      var document = new Document();
+      expect(this.database.convert('cast', 'object', document)).toBe(document);
+
+      var date = new Date();
+      expect(this.database.convert('cast', 'object', date)).toBe(date);
 
     });
 
