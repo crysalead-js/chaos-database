@@ -104,10 +104,10 @@ class Database extends Source {
 
     var handlers = this._handlers;
 
-    this.formatter('datasource', 'id',        handlers.datasource['string']);
-    this.formatter('datasource', 'serial',    handlers.datasource['string']);
-    this.formatter('datasource', 'integer',   handlers.datasource['string']);
-    this.formatter('datasource', 'float',     handlers.datasource['string']);
+    this.formatter('datasource', 'id',        handlers.datasource['integer']);
+    this.formatter('datasource', 'serial',    handlers.datasource['integer']);
+    this.formatter('datasource', 'integer',   handlers.datasource['integer']);
+    this.formatter('datasource', 'float',     handlers.datasource['float']);
     this.formatter('datasource', 'decimal',   handlers.datasource['decimal']);
     this.formatter('datasource', 'date',      handlers.datasource['date']);
     this.formatter('datasource', 'datetime',  handlers.datasource['datetime']);
@@ -355,10 +355,19 @@ class Database extends Source {
   _handlers() {
     return merge({}, super._handlers(), {
       datasource: {
+        'integer': function(value, column) {
+          return !isNaN(parseFloat(value)) && isFinite(value) ? value + '' : '';
+        },
+        'float': function(value, column) {
+          return !isNaN(parseFloat(value)) && isFinite(value) ? value + '' : '';
+        },
         'decimal': function(value, column) {
           var defaults = { precision: 2 };
           column = extend({}, defaults, column);
-          return Number(value).toFixed(column.precision);
+          if (isNaN(parseFloat(value)) || !isFinite(value)) {
+            return '';
+          }
+          return Number(parseFloat(value)).toFixed(column.precision);
         },
         'quote': function(value, column) {
           return this.dialect().quote(String(value));
