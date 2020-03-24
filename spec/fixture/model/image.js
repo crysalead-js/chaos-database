@@ -5,7 +5,6 @@ var Gallery = require('./gallery');
 class Image extends Model {
   static _define(schema) {
     schema.column('id', { type: 'serial' });
-    schema.column('gallery_id', { type: 'integer' });
     schema.column('name', { type: 'string', null: true });
     schema.column('title', { type: 'string', length: 50, null: true });
 
