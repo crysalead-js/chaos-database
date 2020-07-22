@@ -86,6 +86,14 @@ class Query {
      */
     this._page = [];
 
+
+    /**
+     * Default fetch options.
+     *
+     * @var Object
+     */
+    this._fetchOptions = {};
+
     var schema = this.schema();
 
     /**
@@ -139,6 +147,20 @@ class Query {
   }
 
   /**
+   * Get/set default fetch options.
+   *
+   * @param  Object|null $fetchOptions The fetching options.
+   * @return Object.
+   */
+  fetchOptions(fetchOptions) {
+    if (arguments.length) {
+      this._fetchOptions = fetchOptions;
+      return this;
+    }
+    return Object.assign({ return: 'entity' }, this._fetchOptions);
+  }
+
+  /**
    * Executes the query and returns the result.
    *
    * @param  Object  Options The fetching options.
@@ -146,10 +168,7 @@ class Query {
    */
   get(options) {
     return co(function*(){
-      var defaults = {
-        return: 'entity'
-      };
-      options = extend({}, defaults, options);
+      options = extend({}, this.fetchOptions(), options);
 
       this._applyHas();
       this._applyLimit();
