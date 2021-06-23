@@ -100,7 +100,7 @@ class Schema extends BaseSchema {
            .constraints(this.meta('constraints'))
            .meta(this.meta('table'));
 
-      yield this.connection().query(query.toString());
+      return yield this.connection().query(query.toString());
 
     }.bind(this));
   }
@@ -114,15 +114,18 @@ class Schema extends BaseSchema {
    */
   bulkInsert(inserts, filter) {
     return co(function*() {
-      if (!inserts || !inserts.length) {
-        return;
+      if (!inserts || !inserts.length) {
+        return true;
       }
+      var success = true;
+
       for (var entity of inserts) {
-        yield this.insert(filter(entity));
+        success = success && (yield this.insert(filter(entity)));
         var id = entity.id();
         id = id == null ? this.lastInsertId() : id;
         entity.amend({[this.key()]: id}, { exists: true });
       }
+      return success;
     }.bind(this));
   }
 
@@ -136,16 +139,20 @@ class Schema extends BaseSchema {
   bulkUpdate(updates, filter) {
     return co(function*() {
       if (!updates || !updates.length) {
-          return;
+          return true;
       }
+
+      var success = true;
+
       for (var entity of updates) {
         var id = entity.id();
         if (id === undefined) {
           throw new Error("Can't update an existing entity with a missing ID.");
         }
-        yield this.update(filter(entity), {[this.key()] : id});
+        success = success && (yield this.update(filter(entity), {[this.key()] : id}));
         entity.amend();
       }
+      return success;
     }.bind(this));
   }
 

@@ -217,7 +217,7 @@ class Database extends Source {
    */
   transaction(transaction, maxRepeat) {
     return co(function*() {
-      maxRepeat = maxRepeat || 1;
+      maxRepeat = maxRepeat || 1;
       for (var count = 1; count <= maxRepeat; count++) {
         yield this.beginTransaction();
         try {
