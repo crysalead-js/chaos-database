@@ -305,6 +305,19 @@ class Schema extends BaseSchema {
         }
       }
     }
+
+    if (!basePath) {
+      for (name in this._relations) {
+        value = this._relations[name];
+        var rel = this.relation(name);
+        if (rel.type() !== 'belongsTo') {
+          continue;
+        }
+        if (value['null'] && !value['array']) {
+          defaults[rel.keys('from')] = null;
+        }
+      }
+    }
     return defaults;
   }
 
