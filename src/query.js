@@ -3,6 +3,19 @@ var extend = require('extend-merge').extend;
 var merge = require('extend-merge').merge;
 var Model = require('chaos-orm').Model;
 
+function isEmpty(value) {
+  if (!value) {
+    return true;
+  }
+  for (var i in value) {
+    return false;
+  }
+  if (Array.isArray(value) && value.length) {
+    return false;
+  }
+  return true;
+}
+
 /**
  * The Query wrapper.
  */
@@ -308,8 +321,10 @@ class Query {
    * @return Function            Returns `this`.
    */
   where(conditions, alias) {
-    var conditions = this.statement().dialect().prefix(conditions, alias ? alias : this.alias(), false);
-    this.statement().where(conditions);
+    if (!isEmpty(conditions)) {
+      var conditions = this.statement().dialect().prefix(conditions, alias ? alias : this.alias(), false);
+      this.statement().where(conditions);
+    }
     return this;
   }
 
@@ -432,14 +447,16 @@ class Query {
     if (!arguments.length) {
       return this._embed;
     }
-    if (typeof embed === "string" && arguments.length === 2) {
-      var mix = {};
-      mix[embed] = conditions || [];
-      embed = [mix];
-    } else {
-      embed = Array.isArray(embed) ? embed : [embed];
+    if (!isEmpty(embed)) {
+      if (typeof embed === "string" && arguments.length === 2) {
+        var mix = {};
+        mix[embed] = conditions || [];
+        embed = [mix];
+      } else {
+        embed = Array.isArray(embed) ? embed : [embed];
+      }
+      this._embed = this._embed.concat(embed);
     }
-    this._embed = this._embed.concat(embed);
     return this;
   }
 
@@ -452,12 +469,14 @@ class Query {
     if (!arguments.length) {
       return this._has;
     }
-    if (typeof has === 'string') {
-      var mix = {};
-      mix[has] = conditions || [];
-      has = [mix];
+    if (!isEmpty(has)) {
+      if (typeof has === 'string') {
+        var mix = {};
+        mix[has] = conditions || [];
+        has = [mix];
+      }
+      this._has = this._has.concat(has);
     }
-    this._has = this._has.concat(has)
     return this;
   }
 
