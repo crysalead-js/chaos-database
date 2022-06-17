@@ -13,10 +13,10 @@
     "sql"
   ],
   "dependencies": {
-    "chaos-orm": "^19.0.0",
+    "chaos-orm": "^19.0.4",
     "co": "4.6.0",
     "dateformat": "4.5.1",
-    "dateparse": "0.0.1",
+    "dateparse": "0.0.2",
     "extend-merge": "^1.0.6",
     "sql-dialect": "^5.0.1"
   },
@@ -26,8 +26,8 @@
     "chai-kahlan": "^2.0.0",
     "coveralls": "^3.1.1",
     "jasmine-kahlan": "^1.0.2",
-    "mocha": "^9.0.3",
-    "sqlite3": "^5.0.2",
+    "mocha": "^10.0.0",
+    "sqlite3": "^5.0.8",
     "nyc": "^15.1.0"
   },
   "scripts": {

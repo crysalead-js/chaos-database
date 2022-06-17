@@ -381,7 +381,7 @@ class Database extends Source {
           column = column || {};
           column.format = column.format ? column.format : 'yyyy-mm-dd HH:MM:ss';
           var date = dateParse(value, true);
-          if (Number.isNaN(date.getTime())) {
+          if (!date || Number.isNaN(date.getTime())) {
             throw new Error("Invalid date `" + value + "`, can't be parsed.");
           }
           return this.dialect().quote(dateFormat(date, column.format, true));

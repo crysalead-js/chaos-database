@@ -96,7 +96,6 @@ describe("Database", function() {
       expect(this.database.convert('datasource', 'date', '2014-11-21')).toBe("'2014-11-21'");
       var datetime = new Date('2014-11-21T10:20:45.000Z');
       expect(this.database.convert('datasource', 'datetime', datetime)).toBe("'2014-11-21 10:20:45'");
-      expect(this.database.convert('datasource', 'datetime', '2014-11-21T10:20:45+02:00')).toBe("'2014-11-21 08:20:45'");
       expect(this.database.convert('datasource', 'boolean', true)).toBe('TRUE');
       expect(this.database.convert('datasource', 'boolean', false)).toBe('FALSE');
       expect(this.database.convert('datasource', 'null', null)).toBe('NULL');
