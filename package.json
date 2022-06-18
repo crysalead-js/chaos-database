@@ -1,6 +1,6 @@
 {
   "name": "chaos-database",
-  "version": "19.0.1",
+  "version": "19.0.2",
   "description": "Chaos ORM base classes for SQL based adapter.",
   "license": "MIT",
   "repository": {
@@ -13,7 +13,7 @@
     "sql"
   ],
   "dependencies": {
-    "chaos-orm": "^19.0.4",
+    "chaos-orm": "^19.0.5",
     "co": "4.6.0",
     "dateformat": "4.5.1",
     "dateparse": "0.0.2",
@@ -23,7 +23,7 @@
   "main": "src/index.js",
   "devDependencies": {
     "bluebird": "^3.7.2",
-    "chai-kahlan": "^2.0.0",
+    "chai-kahlan": "^2.0.1",
     "coveralls": "^3.1.1",
     "jasmine-kahlan": "^1.0.2",
     "mocha": "^10.0.0",
